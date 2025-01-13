@@ -13,6 +13,9 @@ def main():
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)    
 
+    updateable = [player]
+    drawable = [player]
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -22,10 +25,13 @@ def main():
         dt = clock.tick(60) / 1000
 
         # Update the player
-        player.update(dt)
+        for obj in updateable:
+            obj.update(dt)
 
         # Step 3: Draw the game onto the screen
         screen.fill((0, 0, 0))  # Fill the screen with black
+        for obj in drawable:
+            obj.draw(screen)
 
         player.draw(screen)
 
