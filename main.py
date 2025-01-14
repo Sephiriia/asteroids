@@ -1,9 +1,9 @@
 import pygame
 import sys
 import random
-from constants import *
 from player import Player
 from asteroid import Asteroid
+from shot import Shot
 
 def spawn_asteroid(asteroids):
     screen_width, screen_height = 800, 600
@@ -33,8 +33,8 @@ def main():
     clock = pygame.time.Clock()
 
     print("Starting asteroids!")
-    print(f"Screen width: {SCREEN_WIDTH}")
-    print(f"Screen height: {SCREEN_HEIGHT}")
+    print(f"Screen width: {screen.get_width()}")
+    print(f"Screen height: {screen.get_height()}")
 
     drawable = []
     updatable = []
@@ -42,7 +42,9 @@ def main():
     # Create player and asteroids group
     player = Player(400, 300)
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
     Asteroid.containers = asteroids
+    Shot.containers = shots
 
     # Initial spawn of asteroids
     for _ in range(5):
@@ -50,8 +52,10 @@ def main():
 
     drawable.append(player)
     drawable.extend(asteroids)
+    drawable.extend(shots)
     updatable.append(player)
     updatable.extend(asteroids)
+    updatable.extend(shots)
 
     running = True
     while running:

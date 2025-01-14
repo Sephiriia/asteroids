@@ -1,12 +1,14 @@
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED
+from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED, PLAYER_SHOOT_SPEED
+from shot import Shot
 
 class Player(CircleShape, pygame.sprite.Sprite):
     def __init__(self, x, y):
         CircleShape.__init__(self, x, y, PLAYER_RADIUS)
         pygame.sprite.Sprite.__init__(self)
         self.rotation = 0
+        self.shots = pygame.sprite.Group()
     
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -20,6 +22,8 @@ class Player(CircleShape, pygame.sprite.Sprite):
         vertices = self.triangle()
         color = (255, 255, 255)
         pygame.draw.polygon(screen, color, vertices, 2)
+        for shot in self.shots:
+            shot.draw(screen)
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
@@ -39,6 +43,21 @@ class Player(CircleShape, pygame.sprite.Sprite):
         if keys[pygame.K_s]:
             self.move(-dt)
 
+        if keys[pygame.K_SPACE]:
+            shot = self.shoot()
+            if shot:  # Ensure the shot is not None
+                self.shots.add(shot)
+
+        for shot in self.shots:
+            shot.update(dt)
+
     def move(self, dt):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         self.position += forward * PLAYER_SPEED * dt
+
+    def shoot(self):
+        forward = pygame.Vector2(0, 1).rotate(self.rotation)
+        shot_position = self.position + forward * self.radius
+        shot = Shot(shot_position.x, shot_position.y)
+        shot.velocity = forward * PLAYER_SHOOT_SPEED
+        return shot
