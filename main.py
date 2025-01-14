@@ -1,38 +1,76 @@
 import pygame
+import sys
+import random
 from constants import *
 from player import Player
-from asteroidfield import AsteroidField
+from asteroid import Asteroid
+
+def spawn_asteroid(asteroids):
+    screen_width, screen_height = 800, 600
+    edge = random.choice(['top', 'bottom', 'left', 'right'])
+    
+    if edge == 'top':
+        x = random.randint(0, screen_width)
+        y = 0
+    elif edge == 'bottom':
+        x = random.randint(0, screen_width)
+        y = screen_height
+    elif edge == 'left':
+        x = 0
+        y = random.randint(0, screen_height)
+    elif edge == 'right':
+        x = screen_width
+        y = random.randint(0, screen_height)
+    
+    radius = random.randint(10, 30)
+    asteroid = Asteroid(x, y, radius)
+    asteroid.velocity = pygame.Vector2(random.uniform(-50, 50), random.uniform(-50, 50))
+    asteroids.add(asteroid)
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
 
     print("Starting asteroids!")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
 
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)    
+    drawable = []
+    updatable = []
 
-    updatable = [player]
-    drawable = [player]
+    # Create player and asteroids group
+    player = Player(400, 300)
+    asteroids = pygame.sprite.Group()
+    Asteroid.containers = asteroids
 
-    # Create a new AsteroidField object
-    asteroid_field = AsteroidField()
-    updatable.append(asteroid_field)
-    drawable.append(asteroid_field)
+    # Initial spawn of asteroids
+    for _ in range(5):
+        spawn_asteroid(asteroids)
+
+    drawable.append(player)
+    drawable.extend(asteroids)
+    updatable.append(player)
+    updatable.extend(asteroids)
 
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                running = False
 
         dt = clock.tick(60) / 1000
 
         # Update all updatable objects
         for obj in updatable:
             obj.update(dt)
+
+        # Check for collisions
+        for asteroid in asteroids:
+            if player.check_collision(asteroid):
+                print("Game over!")
+                running = False
+                break
 
         # Draw all drawable objects
         screen.fill((0, 0, 0))  # Fill the screen with black
@@ -41,7 +79,14 @@ def main():
 
         pygame.display.flip()  # Update the full display Surface to the screen
 
+        # Spawn new asteroids periodically
+        if random.random() < 0.01:  # Adjust the probability as needed
+            spawn_asteroid(asteroids)
+            drawable.append(asteroids.sprites()[-1])
+            updatable.append(asteroids.sprites()[-1])
+
     pygame.quit()
+    sys.exit()
 
 if __name__ == "__main__":
     main()
