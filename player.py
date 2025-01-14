@@ -10,6 +10,7 @@ class Player(CircleShape, pygame.sprite.Sprite):
         self.rotation = 0
         self.shots = pygame.sprite.Group()
         self.shoot_timer = 0
+        self.size = (PLAYER_RADIUS * 2, PLAYER_RADIUS * 2)  # Assuming size is diameter
     
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -68,3 +69,12 @@ class Player(CircleShape, pygame.sprite.Sprite):
         shot = Shot(shot_position.x, shot_position.y)
         shot.velocity = forward * PLAYER_SHOOT_SPEED
         return shot
+
+    def check_collision(self, asteroid):
+        # Simple bounding box collision detection
+        if (self.position[0] < asteroid.position[0] + asteroid.size[0] and
+            self.position[0] + self.size[0] > asteroid.position[0] and
+            self.position[1] < asteroid.position[1] + asteroid.size[1] and
+            self.position[1] + self.size[1] > asteroid.position[1]):
+            return True
+        return False

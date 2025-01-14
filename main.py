@@ -6,25 +6,9 @@ from asteroid import Asteroid
 from shot import Shot
 
 def spawn_asteroid(asteroids):
-    screen_width, screen_height = 800, 600
-    edge = random.choice(['top', 'bottom', 'left', 'right'])
-    
-    if edge == 'top':
-        x = random.randint(0, screen_width)
-        y = 0
-    elif edge == 'bottom':
-        x = random.randint(0, screen_width)
-        y = screen_height
-    elif edge == 'left':
-        x = 0
-        y = random.randint(0, screen_height)
-    elif edge == 'right':
-        x = screen_width
-        y = random.randint(0, screen_height)
-    
-    radius = random.randint(10, 30)
-    asteroid = Asteroid(x, y, radius)
-    asteroid.velocity = pygame.Vector2(random.uniform(-50, 50), random.uniform(-50, 50))
+    position = (random.randint(0, screen_width), random.randint(0, screen_height))
+    size = (random.randint(20, 50), random.randint(20, 50))  # Example size
+    asteroid = Asteroid(position, size)
     asteroids.add(asteroid)
 
 def main():
@@ -69,12 +53,19 @@ def main():
         for obj in updatable:
             obj.update(dt)
 
-        # Check for collisions
+        # Check for collisions between player and asteroids
         for asteroid in asteroids:
             if player.check_collision(asteroid):
                 print("Game over!")
                 running = False
                 break
+
+        # Check for collisions between bullets and asteroids
+        for asteroid in asteroids:
+            for shot in player.shots:
+                if pygame.sprite.collide_rect(asteroid, shot):
+                    asteroid.kill()
+                    shot.kill()
 
         # Draw all drawable objects
         screen.fill((0, 0, 0))  # Fill the screen with black

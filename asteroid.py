@@ -1,16 +1,16 @@
 from circleshape import CircleShape
 import pygame
 
-class Asteroid(CircleShape):
+class Asteroid:
     containers = []
 
-    def __init__(self, x, y, radius):
-        super().__init__(x, y, radius)
-        pygame.sprite.Sprite.__init__(self, self.containers)
+    def __init__(self, position, size):
+        self.position = position
+        self.size = size
         self.velocity = pygame.Vector2(0, 0)
-        self.image = pygame.Surface((2 * radius, 2 * radius), pygame.SRCALPHA)
-        pygame.draw.circle(self.image, (255, 255, 255), (radius, radius), radius, 2)
-        self.rect = self.image.get_rect(center=(x, y))
+        self.image = pygame.Surface((2 * size, 2 * size), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, (255, 255, 255), (size, size), size, 2)
+        self.rect = self.image.get_rect(center=(position.x, position.y))
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
