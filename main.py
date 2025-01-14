@@ -1,6 +1,7 @@
 import pygame
 from constants import *
 from player import Player
+from asteroidfield import AsteroidField
 
 def main():
     pygame.init()
@@ -13,8 +14,13 @@ def main():
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)    
 
-    updateable = [player]
+    updatable = [player]
     drawable = [player]
+
+    # Create a new AsteroidField object
+    asteroid_field = AsteroidField()
+    updatable.append(asteroid_field)
+    drawable.append(asteroid_field)
 
     running = True
     while running:
@@ -24,16 +30,14 @@ def main():
 
         dt = clock.tick(60) / 1000
 
-        # Update the player
-        for obj in updateable:
+        # Update all updatable objects
+        for obj in updatable:
             obj.update(dt)
 
-        # Step 3: Draw the game onto the screen
+        # Draw all drawable objects
         screen.fill((0, 0, 0))  # Fill the screen with black
         for obj in drawable:
             obj.draw(screen)
-
-        player.draw(screen)
 
         pygame.display.flip()  # Update the full display Surface to the screen
 
